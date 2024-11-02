@@ -6,25 +6,31 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+
+import SellHome from '../component/SellHome';
+import RentHome from '../component/RentHome';
 
 const style = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  
   bgcolor: 'background.paper',
-  border: '2px solid #000',
+  border: '2px solid black',
   boxShadow: 24,
-  p: 4,
+  
+  borderRadius: '8px',
+  maxHeight: '90vh', // Limit the height
+  overflowY: 'auto', // Enable vertical scrolling
+  width: '60%', // Set a responsive width
+  maxWidth: '500px', // Max width for the modal
 };
 
 function Dashboard() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [openSellModal, setOpenSellModal] = useState(false);
+  const [openRentModal, setOpenRentModal] = useState(false);
   
   const [userInfo, setUserInfo] = useState({
     name: '',
@@ -32,7 +38,7 @@ function Dashboard() {
     address: '',
     phone: '',
     gender: '',
-    profilePhoto: '', // Added to store profile photo URL
+    profilePhoto: '',
   });
 
   const user = auth.currentUser;
@@ -41,10 +47,10 @@ function Dashboard() {
     if (user) {
       const fetchUserData = async () => {
         try {
-          const docRef = doc(db, 'users', user.uid); // Use the current user's uid
+          const docRef = doc(db, 'users', user.uid);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
-            setUserInfo(docSnap.data()); // Set the existing data
+            setUserInfo(docSnap.data());
           } else {
             console.log('No such document!');
           }
@@ -60,36 +66,35 @@ function Dashboard() {
     e.preventDefault();
     if (user) {
       try {
-        const docRef = doc(db, 'users', user.uid); // Reference to the current user's document
-        await updateDoc(docRef, { ...userInfo }); // Update the document with the new user info
-        toast.success('Profile updated successfully!'); // Success notification
+        const docRef = doc(db, 'users', user.uid);
+        await updateDoc(docRef, { ...userInfo });
+        toast.success('Profile updated successfully!');
       } catch (error) {
         console.error('Error updating profile:', error);
-        toast.error('Failed to update profile.'); // Error notification
+        toast.error('Failed to update profile.');
       }
     }
   };
 
-  // Determine default profile photo based on gender
   const defaultPhoto = userInfo.gender === 'Female' ? '/assests/female.png' : '/assests/male.png';
   const profilePhoto = userInfo.profilePhoto || defaultPhoto;
 
   return (
-    <div className="flex flex-col md:flex-row mx-auto mt-16 p-4 w-full">
+    <div className="flex flex-col md:flex-row mx-auto mt-16 p-6 max-w-4xl bg-white rounded-lg shadow-lg">
       {/* Profile Photo Section */}
       <div className="flex-shrink-0">
         <img 
           src={profilePhoto} 
           alt="Profile" 
-          className="h-24 w-24 rounded-full border-2 border-gray-300" 
+          className="h-32 w-32 rounded-full border-4 border-gray-300 shadow-lg" 
         />
       </div>
 
       {/* User Info Form Section */}
       <div className="flex-grow ml-4">
-        <h1 className="text-2xl font-bold mb-6">User Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-6 text-gray-800">User Dashboard</h1>
 
-        <form onSubmit={handleUpdate} className="space-y-4">
+        <form onSubmit={handleUpdate} className="space-y-6">
           <Input 
             label="Name" 
             placeholder="Enter your name" 
@@ -119,12 +124,12 @@ function Dashboard() {
           
           {/* Gender Select Input */}
           <div className="flex flex-col">
-            <label htmlFor="gender" className="mb-2 font-medium">Gender</label>
+            <label htmlFor="gender" className="mb-2 font-medium text-gray-700">Gender</label>
             <select
               id="gender"
               value={userInfo.gender}
               onChange={(e) => setUserInfo({ ...userInfo, gender: e.target.value })}
-              className="border rounded py-2 px-3"
+              className="border rounded py-2 px-3 text-gray-700 focus:outline-none focus:ring focus:ring-yellow-300"
             >
               <option value="">Select Gender</option>
               <option value="Male">Male</option>
@@ -135,7 +140,7 @@ function Dashboard() {
 
           <button 
             type="submit" 
-            className="w-full mt-4 bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 transition duration-200"
+            className="w-full mt-4 bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 transition duration-200 shadow-lg"
           >
             Update Profile
           </button>
@@ -143,22 +148,50 @@ function Dashboard() {
       </div>
 
       {/* Modal Button Section */}
-      <div className=" mt-4">
-        <Button variant="contained" onClick={handleOpen}>
-         want to sell/rent home?
+      <div className="mt-4 flex flex-col gap-4 m-3 h-9">
+        <Button 
+          variant="contained" 
+          color="black" 
+          onClick={() => setOpenSellModal(true)} // Open the sell modal
+          className="bg-black hover:bg-yellow-400 transition duration-200"
+        >
+          Want to sell home?
+        </Button>
+        <h2>OR</h2> 
+        <Button 
+          variant="contained" 
+          color="black" 
+          onClick={() => setOpenRentModal(true)} // Open the rent modal
+          className="bg-black hover:bg-yellow-400 transition duration-200"
+        >
+          Want to rent home?
         </Button>
       </div>
 
+      {/* Sell Home Modal */}
       <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        open={openSellModal}
+        onClose={() => setOpenSellModal(false)}
+        aria-labelledby="sell-home-modal-title"
+        aria-describedby="sell-home-modal-description"
       >
         <Box sx={style}>
-         
+          <SellHome />
         </Box>
       </Modal>
+
+      {/* Rent Home Modal */}
+      <Modal
+        open={openRentModal}
+        onClose={() => setOpenRentModal(false)}
+        aria-labelledby="rent-home-modal-title"
+        aria-describedby="rent-home-modal-description"
+      >
+        <Box sx={style}>
+          <RentHome />
+        </Box>
+      </Modal>
+
       <ToastContainer />
     </div>
   );
