@@ -1,12 +1,15 @@
-// src/components/ProtectedRoute.js
+// src/component/ProtectedRoute.js
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth'; // Custom hook for authentication status
+import { useAuth } from '../hooks/useAuth';
 
-const ProtectedRoute = ({ children }) => {
-  const { currentUser } = useAuth(); // Get current user status from your auth context or hook
+function ProtectedRoute({ children }) {
+  const { user } = useAuth();
 
-  return currentUser ? children : <Navigate to="/login" />;
-};
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+  return children;
+}
 
 export default ProtectedRoute;

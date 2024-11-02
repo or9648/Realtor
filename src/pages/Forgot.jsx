@@ -1,17 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Input from '../component/Input'; // Ensure this path is correct
-import { Link } from 'react-router-dom'; // For navigation
-import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
-import 'react-toastify/dist/ReactToastify.css'; // Import CSS for Toastify
+import { Link } from 'react-router-dom'; 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../firebase/firebaseConfig'; // Import Firebase auth
 
 function Forgot() {
-  const handleSubmit = (e) => {
+  const [email, setEmail] = useState('');
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Show a toast notification
-    toast.success('Password reset email sent!', {
-      position: toast.POSITION.TOP_CENTER,
-      autoClose: 3000, // Auto close after 3 seconds
-    });
+
+    if (!email) {
+      toast.error('Please enter your email.');
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast.success('Password reset email sent!')
+       
+    
+    } catch (error) {
+      toast.error('Failed to send password reset email: ' + error.message, {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    }
   };
 
   return (
@@ -37,9 +52,11 @@ function Forgot() {
             placeholder="Enter your email" 
             name="email" 
             type="email" 
+            value={email} 
+            setValue={setEmail} 
           />
           <button 
-            type="submit" // Change to 'submit' for form submission
+            type="submit"
             className="w-full mt-4 bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 transition duration-200"
           >
             Send Password Reset Email

@@ -8,6 +8,7 @@ import SignUp from './pages/SignUp';
 import Offers from './pages/Offers';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './component/ProtectedRoute';
+import Forgot from './pages/Forgot';
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/offers" element={<Offers />} />
-        
+        <Route path="/forgot" element={<Forgot />} />
         {/* Protected Route for Dashboard */}
         <Route 
           path="/dashboard" 

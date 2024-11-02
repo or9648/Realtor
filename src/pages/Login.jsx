@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Input from '../component/Input'; // Make sure this path is correct
+import Input from '../component/Input'; // Ensure the path is correct
 import { Link, useNavigate } from 'react-router-dom';
-import { auth } from '../firebase/firebaseConfig'; // Import Firebase auth
+import { auth } from '../firebase/firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,7 +19,7 @@ function Login() {
       .then((userCredential) => {
         console.log('User logged in:', userCredential.user);
         toast.success('Logged in successfully!');
-        navigate('/'); // Redirect to home page or another page after login
+        navigate('/dashboard'); // Redirect to dashboard after successful login
       })
       .catch((error) => {
         console.error('Error logging in:', error);

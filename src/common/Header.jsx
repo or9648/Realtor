@@ -51,6 +51,14 @@ function Header() {
             Home
           </NavLink>
           <NavLink 
+            to="/dashboard" 
+            className={({ isActive }) => 
+              isActive ? "text-yellow-500 font-semibold" : "text-white hover:text-yellow-500"
+            }
+          >
+          dashboard
+          </NavLink>
+          <NavLink 
             to="/offers" 
             className={({ isActive }) => 
               isActive ? "text-yellow-500 font-semibold" : "text-white hover:text-yellow-500"
