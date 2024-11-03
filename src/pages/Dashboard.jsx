@@ -10,6 +10,8 @@ import Modal from '@mui/material/Modal';
 
 import SellHome from '../component/SellHome';
 import RentHome from '../component/RentHome';
+import Card from '../component/Card';
+import OwnerList from '../component/Ownerlist';
 
 const style = {
   position: 'absolute',
@@ -80,7 +82,8 @@ function Dashboard() {
   const profilePhoto = userInfo.profilePhoto || defaultPhoto;
 
   return (
-    <div className="flex flex-col md:flex-row mx-auto mt-16 p-6 max-w-4xl bg-white rounded-lg shadow-lg">
+    <div>
+<div className="flex flex-col md:flex-row mx-auto mt-16 p-6 w-full h-screen rounded-lg shadow-lg">
       {/* Profile Photo Section */}
       <div className="flex-shrink-0">
         <img 
@@ -91,10 +94,10 @@ function Dashboard() {
       </div>
 
       {/* User Info Form Section */}
-      <div className="flex-grow ml-4">
+      <div className="flex-grow  ml-4">
         <h1 className="text-3xl font-bold mb-6 text-gray-800">User Dashboard</h1>
 
-        <form onSubmit={handleUpdate} className="space-y-6">
+        <form onSubmit={handleUpdate} className="space-y-6  w-full ">
           <Input 
             label="Name" 
             placeholder="Enter your name" 
@@ -145,6 +148,7 @@ function Dashboard() {
             Update Profile
           </button>
         </form>
+      
       </div>
 
       {/* Modal Button Section */}
@@ -194,6 +198,13 @@ function Dashboard() {
 
       <ToastContainer />
     </div>
+    <div className='   p-4 mt-0'>
+    <h1 className=' text-5xl mt-5 text-black p-5 font-bold items-center'> Your List </h1>
+      <OwnerList/>
+    </div>
+
+    </div>
+    
   );
 }
 

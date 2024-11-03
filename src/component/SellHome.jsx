@@ -4,7 +4,7 @@ import { addHouseDetails } from '../function/sellrent'; // Adjust the path accor
 import { storage } from '../firebase/firebaseConfig'; // Ensure storage is correctly imported
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { toast } from 'react-toastify';
-
+import {  auth } from '../firebase/firebaseConfig'; 
 function SellHome() {
   const [houseDetails, setHouseDetails] = useState({
     bedrooms: '',
@@ -35,6 +35,13 @@ function SellHome() {
 
     setLoading(true); // Start loader
     try {
+      const user = auth.currentUser;
+      if (!user) {
+        toast.error("User not authenticated");
+        setLoading(false);
+        return;
+      }
+
       const fileRef = ref(storage, `images/${houseDetails.image.name}`);
       const uploadTask = uploadBytesResumable(fileRef, houseDetails.image);
 
@@ -51,7 +58,10 @@ function SellHome() {
         },
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          await addHouseDetails({ ...houseDetails, image: downloadURL }, 'sell');
+          await addHouseDetails(
+            { ...houseDetails, image: downloadURL,type:"sell", uid: user.uid }, // Add UID to data
+            "ownerlist"
+          );
           toast.success('House details submitted successfully for sale!');
           setHouseDetails({
             bedrooms: '',

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Input from '../component/Input'; // Ensure this path is correct
 import { addHouseDetails } from '../function/sellrent'; // Adjust the path accordingly
-import { toast } from 'react-toastify';
-import { storage } from '../firebase/firebaseConfig'; // Firebase storage configuration
+import { auth, storage } from '../firebase/firebaseConfig'; // Firebase auth and storage configuration
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { toast } from 'react-toastify';
 
 function RentHome() {
   const [houseDetails, setHouseDetails] = useState({
@@ -33,35 +33,36 @@ function RentHome() {
       return;
     }
 
+    setUploading(true);
     try {
-      setUploading(true);
+      const user = auth.currentUser;
+      if (!user) {
+        toast.error("User not authenticated");
+        setUploading(false);
+        return;
+      }
 
-      // Firebase storage path
       const fileRef = ref(storage, `images/${houseDetails.image.name}`);
       const uploadTask = uploadBytesResumable(fileRef, houseDetails.image);
 
-      // Track the upload progress
       uploadTask.on(
-        'state_changed', 
+        'state_changed',
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`Upload is ${progress}% done`);
+          console.log('Upload is ' + progress + '% done');
         },
         (error) => {
-          setUploading(false);
           console.error('Upload failed:', error);
+          setUploading(false);
           toast.error('Failed to upload image.');
         },
         async () => {
-          // Handle successful upload
-          const downloadURL = await getDownloadURL(fileRef);
-          console.log('File available at', downloadURL);
-
-          // Add house details with the image URL to Firestore
-          await addHouseDetails({ ...houseDetails, image: downloadURL }, 'rent');
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          await addHouseDetails(
+            { ...houseDetails, image: downloadURL, type: "rent", uid: user.uid },
+            "ownerlist"
+          );
           toast.success('House details submitted successfully for rent!');
-
-          // Reset the form
           setHouseDetails({
             bhk: '',
             bathrooms: '',
@@ -75,9 +76,9 @@ function RentHome() {
         }
       );
     } catch (error) {
+      console.error('Error in handleSubmit:', error);
       setUploading(false);
       toast.error('Failed to submit house details for rent.');
-      console.error('Error in handleSubmit:', error);
     }
   };
 
@@ -130,7 +131,6 @@ function RentHome() {
           type="number"
         />
 
-        {/* Image Upload Input */}
         <div className="flex flex-col">
           <label htmlFor="image" className="mb-2 font-medium text-gray-700">Upload Image</label>
           <input
@@ -142,7 +142,16 @@ function RentHome() {
             required
           />
         </div>
-        
+
+        {uploading && (
+          <div className="text-center mt-4 text-yellow-500">
+            <p>Uploading...</p>
+            <div className="flex justify-center items-center mt-2">
+              <div className="animate-spin h-5 w-5 border-4 border-t-transparent border-yellow-500 rounded-full"></div>
+            </div>
+          </div>
+        )}
+
         <button
           type="submit"
           className={`w-full mt-4 bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition duration-200 shadow-lg ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
