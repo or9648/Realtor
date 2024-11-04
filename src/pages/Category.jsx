@@ -12,14 +12,11 @@ function Category() {
     const fetchData = async () => {
       try {
         const propertyList = await getListById(); // Fetch the list of properties
-        console.log('Fetched Property List:', propertyList); // Log the property list
-        // Find the property matching the ID from the URL
         const propertyData = propertyList.find(item => item.id.trim() === id.trim());
 
         if (propertyData) {
           setData(propertyData); // Set the specific property data
         } else {
-          console.error('Property ID not found in the list:', id); // Log the missing ID
           throw new Error('Property not found'); // Throw an error if not found
         }
       } catch (error) {
@@ -31,31 +28,32 @@ function Category() {
 
     fetchData();
   }, [id]);
-   console.log(data);
 
-  // Loading state
   if (loading) return <div className="text-center text-white">Loading...</div>;
-  // No data state
   if (!data) return <div className="text-center text-white">No data found for this property.</div>;
 
   return (
-    <div className='bg-gray-800 h-auto mb-0  mt-14 p-8 flex flex-col md:flex-row gap-8 text-gray-200 rounded-lg shadow-lg'>
-      <div className='flex-shrink-0'>
-        <img src={data.image} className='h-[400px] w-[700px] rounded-lg shadow-lg object-cover' alt="Property" />
-        <div className='pl-8 mt-4'>
-          <h2 className='text-5xl font-bold text-yellow-400 mb-2 flex items-center'>
-            <FaHome className='mr-2' /> 
-            Property Type: 
-            <span className='font-normal text-yellow-300'>{data.type === 'sell' ? ' For Sale' : ' For Rent'}</span>
+    <div className="bg-gray-800 h-[600px] p-2 md:p-8 mt-14 flex flex-col md:flex-row gap-8 text-gray-200 ">
+      <div className="flex-shrink-0 w-full md:w-1/2">
+        <img 
+          src={data.image} 
+          className="w-full h-64 md:h-[400px] rounded-lg shadow-lg object-cover" 
+          alt="Property" 
+        />
+        <div className="mt-4">
+          <h2 className="text-2xl md:text-4xl font-bold text-yellow-400 mb-2 flex items-center">
+            <FaHome className="mr-2" /> 
+            Property Type:
+            <span className="font-normal text-yellow-300">{data.type === 'sell' ? ' For Sale' : ' For Rent'}</span>
           </h2>
         </div>
       </div>
 
-      <div className='flex flex-col justify-center'>
-        <p className='mb-4'>
-          <span className='font-bold text-yellow-400 text-3xl'>Address:</span>
+      <div className="flex flex-col justify-center w-full md:w-1/2">
+        <p className="mb-4">
+          <span className="font-bold text-yellow-400 text-2xl md:text-3xl">Address:</span>
           <br />
-          <span className='font-normal text-xl'>{data.address}</span>
+          <span className="font-normal text-lg md:text-xl">{data.address}</span>
         </p>
 
         {data.type === 'sell' ? (
@@ -76,7 +74,7 @@ function Category() {
             <DetailItem icon={FaDollarSign} label="Price" value={`$${data.price}`} />
           </>
         ) : (
-          <p className='text-red-500'>Unknown property type.</p>
+          <p className="text-red-500">Unknown property type.</p>
         )}
       </div>
     </div>
@@ -85,11 +83,10 @@ function Category() {
 
 // Separate DetailItem component for cleaner code
 const DetailItem = ({ icon: Icon, label, value }) => (
-  <p className='mb-4 flex items-center'>
-    {Icon && <Icon className='mr-2 text-yellow-400 text-2xl' />}
-    <span className='font-bold text-yellow-400 text-3xl'>{label}:</span>
-    <br />
-    <span className='font-normal text-xl'>{value}</span>
+  <p className="mb-4 flex items-start md:items-center flex-col md:flex-row">
+    {Icon && <Icon className="mr-2 text-yellow-400 text-xl md:text-2xl" />}
+    <span className="font-bold text-yellow-400 text-xl md:text-3xl">{label}:</span>
+    <span className="font-normal text-lg md:text-xl ml-0 md:ml-2">{value}</span>
   </p>
 );
 

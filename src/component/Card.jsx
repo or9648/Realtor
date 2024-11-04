@@ -27,14 +27,14 @@ function Card({ id, address, price, br,uid, wr, type, image, buttonText, onEdit,
       <div className="flex flex-col justify-between p-6 space-y-4">
         <div className="space-y-2">
           <h2 className="text-2xl font-semibold tracking-wide text-yellow-600">{type || 'Default Title'}</h2>
-          <p className="text-gray-600 flex items-center">
+          <p className="text-gray-600  h-8 mb-4 flex items-center">
             <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2 text-yellow-500" />
             {address || 'Default description for the card. Customize by passing a description prop.'}
           </p>
           <div className="flex items-center justify-between text-gray-700 text-sm">
             <span className="font-semibold">Price: {price}</span>
-            <span className="font-semibold">BR: {br}</span>
-            <span className="font-semibold">WR: {wr}</span>
+            <span className="font-semibold">BedRoom: {br}</span>
+            <span className="font-semibold">BathRoom: {wr}</span>
           </div>
         </div>
         <div className="flex justify-between items-center mt-4">

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function Footer() {
   return (
-    <footer className="bg-gray-800 text-gray-200 mt-8 shadow">
+    <footer className="bg-gray-800 text-gray-200  shadow">
       <div className="max-w-screen-xl mx-auto p-4 md:py-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
           {/* Logo and Icon */}
