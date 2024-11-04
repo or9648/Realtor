@@ -9,6 +9,8 @@ import Offers from './pages/Offers';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './component/ProtectedRoute';
 import Forgot from './pages/Forgot';
+import Category from './pages/Category';
+import Footer from './common/Footer';
 
 function App() {
   return (
@@ -20,6 +22,11 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/offers" element={<Offers />} />
         <Route path="/forgot" element={<Forgot />} />
+        <Route path="/category/:id" element={
+          <ProtectedRoute>
+<Category/>
+          </ProtectedRoute>
+         } />
         {/* Protected Route for Dashboard */}
         <Route 
           path="/dashboard" 
@@ -30,6 +37,7 @@ function App() {
           } 
         />
       </Routes>
+      <Footer/>
     </>
   );
 }

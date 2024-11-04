@@ -54,6 +54,10 @@ function OwnerList() {
             onButtonClick={() => alert(`Viewing details for ${item.bhk ? `${item.bhk} BHK` : 'this property'}`)}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            price={item.price} 
+             br={item.bedrooms}
+             wr= {item.bathrooms}
+              id={item.id}
           />
         ))
       ) : (

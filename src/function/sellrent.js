@@ -1,15 +1,21 @@
 // Import necessary functions from Firebase
-import { doc, setDoc } from "firebase/firestore";
+import { doc, collection, setDoc } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig"; // Firestore configuration import
 
-// Function to add house details to Firestore
-export const addHouseDetails = async (houseDetails, collectionName) => {
+// Function to add house details to Firestore under a user's UID
+export const addHouseDetails = async (houseDetails) => {
   try {
-    // Create a reference to the document with an auto-generated ID
-    const docRef = doc(db, collectionName, `${houseDetails.address}-${Date.now()}`);
+    const { uid, ...details } = houseDetails; // Destructure uid from houseDetails
+
+    if (!uid) {
+      throw new Error("UID is required to add house details.");
+    }
+
+    // Reference the subcollection "housedetails" under the user's UID
+    const docRef = doc(collection(db, "ownerlist", uid, "housedetails"), `${details.address}-${Date.now()}`);
 
     // Save the details to Firestore
-    await setDoc(docRef, houseDetails);
+    await setDoc(docRef, details);
 
     console.log("House details successfully added!");
   } catch (error) {

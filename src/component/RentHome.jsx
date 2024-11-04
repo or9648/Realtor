@@ -13,6 +13,7 @@ function RentHome() {
     price: '',
     offer: '',
     discount: '',
+    type:'rent',
     image: null,
   });
   const [uploading, setUploading] = useState(false);
@@ -58,10 +59,11 @@ function RentHome() {
         },
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          await addHouseDetails(
-            { ...houseDetails, image: downloadURL, type: "rent", uid: user.uid },
-            "ownerlist"
-          );
+          await addHouseDetails({
+            ...houseDetails,
+            image: downloadURL,
+            uid: user.uid,
+          });
           toast.success('House details submitted successfully for rent!');
           setHouseDetails({
             bhk: '',
@@ -70,6 +72,7 @@ function RentHome() {
             price: '',
             offer: '',
             discount: '',
+            type:'rent',
             image: null,
           });
           setUploading(false);

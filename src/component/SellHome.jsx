@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import Input from '../component/Input'; // Ensure this path is correct
-import { addHouseDetails } from '../function/sellrent'; // Adjust the path accordingly
-import { storage } from '../firebase/firebaseConfig'; // Ensure storage is correctly imported
+import Input from '../component/Input';
+import { addHouseDetails } from '../function/sellrent';
+import { storage } from '../firebase/firebaseConfig';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { toast } from 'react-toastify';
-import {  auth } from '../firebase/firebaseConfig'; 
+import { auth } from '../firebase/firebaseConfig';
+
 function SellHome() {
   const [houseDetails, setHouseDetails] = useState({
     bedrooms: '',
@@ -13,6 +14,7 @@ function SellHome() {
     price: '',
     propertyType: '',
     condition: '',
+     type:'sell',
     image: null,
   });
   const [loading, setLoading] = useState(false);
@@ -22,6 +24,7 @@ function SellHome() {
     if (file && (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg')) {
       setHouseDetails({ ...houseDetails, image: file });
     } else {
+      e.target.value = null; // Clear the invalid file input
       toast.error('Please upload an image file (PNG, JPG, JPEG).');
     }
   };
@@ -33,7 +36,7 @@ function SellHome() {
       return;
     }
 
-    setLoading(true); // Start loader
+    setLoading(true);
     try {
       const user = auth.currentUser;
       if (!user) {
@@ -42,26 +45,27 @@ function SellHome() {
         return;
       }
 
-      const fileRef = ref(storage, `images/${houseDetails.image.name}`);
+      const fileRef = ref(storage, `images/${user.uid}/${Date.now()}_${houseDetails.image.name}`);
       const uploadTask = uploadBytesResumable(fileRef, houseDetails.image);
 
       uploadTask.on(
         'state_changed',
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log('Upload is ' + progress + '% done');
+          toast.info(`Upload is ${Math.round(progress)}% done`, { autoClose: 500 });
         },
         (error) => {
           console.error('Upload failed:', error);
-          setLoading(false); // Stop loader on error
+          setLoading(false);
           toast.error('Failed to upload image.');
         },
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          await addHouseDetails(
-            { ...houseDetails, image: downloadURL,type:"sell", uid: user.uid }, // Add UID to data
-            "ownerlist"
-          );
+          await addHouseDetails({
+            ...houseDetails,
+            image: downloadURL,
+            uid: user.uid,
+          });
           toast.success('House details submitted successfully for sale!');
           setHouseDetails({
             bedrooms: '',
@@ -70,14 +74,16 @@ function SellHome() {
             price: '',
             propertyType: '',
             condition: '',
+            type:"sell",
             image: null,
           });
-          setLoading(false); // Stop loader on success
+          document.getElementById('image').value = null; // Clear the file input
+          setLoading(false);
         }
       );
     } catch (error) {
       console.error('Error in handleSubmit:', error);
-      setLoading(false); // Stop loader on error
+      setLoading(false);
       toast.error('Failed to submit house details for sale.');
     }
   };
@@ -144,7 +150,6 @@ function SellHome() {
           />
         </div>
 
-        {/* Loader */}
         {loading && (
           <div className="text-center mt-4 text-yellow-500">
             <p>Uploading...</p>
@@ -157,7 +162,7 @@ function SellHome() {
         <button
           type="submit"
           className="w-full mt-4 bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition duration-200 shadow-lg"
-          disabled={loading} // Disable button during loading
+          disabled={loading}
         >
           {loading ? 'Processing...' : 'Submit'}
         </button>
